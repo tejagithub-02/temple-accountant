@@ -1,0 +1,188 @@
+/* 🔹 Main Container */
+.seva-bookings-container {
+    padding: 20px;
+    background: #f9f9f9;
+    min-height: 100vh;
+    margin-left: 250px; /* adjust to your sidebar width */
+    margin-top: 100px;  /* adjust to your topbar height */
+    box-sizing: border-box;
+  }
+  
+  /* 🔹 Page Title */
+  .title {
+    margin-bottom: 15px;
+    color: #1a2a6c;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Filters */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .filters input,
+  .filters select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 150px;
+    font-size: 14px;
+  }
+  
+  .apply-btn {
+    background: #1e3c72;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .reset-btn {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  /* 🔹 Total Amount */
+  .total-amount {
+    text-align: right;
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: green;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Table Container */
+  .table-container {
+    overflow-x: auto;    /* horizontal scroll if needed */
+    overflow-y: auto;    /* vertical scroll */
+    max-height: 400px;   /* adjust height */
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 🔹 Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px; /* prevents zoom on small screens */
+  }
+  
+  thead {
+    background: #f1f1f1;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    white-space: normal;  /* ✅ Fix mobile zoom issue */
+    word-wrap: break-word;
+  }
+  
+  /* 🔹 Sticky Header */
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f1f1f1;
+    z-index: 2;
+  }
+  
+  /* 🔹 Action Buttons */
+  .actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  .download-btn {
+    background: orange;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .back-btn {
+    background: #1e3c72;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  /* 🔹 Mobile Responsive */
+  @media (max-width: 768px) {
+    .seva-bookings-container {
+      margin-left: 0;   /* remove sidebar space */
+      padding: 10px;
+    }
+  
+    .filters {
+      flex-direction: column;
+      position: sticky;
+      top: 60px; /* adjust for topbar height */
+      z-index: 10;
+      background: #f9f9f9;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    .filters input,
+    .filters select {
+      width: 100%; /* full width */
+    }
+  
+    .apply-btn,
+    .reset-btn {
+      width: 100%;
+    }
+  
+    th, td {
+      font-size: 12px;
+      padding: 6px;
+    }
+  
+    table {
+      min-width: unset; /* allow smaller width on mobile */
+    }
+  }
+  
+  /* 🔹 Extra Small Screens (Phones ≤ 480px) */
+  @media (max-width: 480px) {
+    .filters {
+      gap: 6px;
+    }
+  
+    .apply-btn,
+    .reset-btn {
+      padding: 6px;
+      font-size: 12px;
+    }
+  
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .download-btn,
+    .back-btn {
+      width: 100%;
+      padding: 8px;
+      font-size: 13px;
+    }
+  }
+  

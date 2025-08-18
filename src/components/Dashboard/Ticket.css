@@ -1,0 +1,140 @@
+.ticket-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fdfbfb, #ebedee);
+    padding: 20px;
+    margin-top: 80px;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .ticket-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    width: 100%;              /* take full width by default */
+    max-width: 460px;         /* but not larger than 460px */
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    border: 3px solid #2a6edc;
+    padding: 20px;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .ticket-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .ticket-header {
+    background: linear-gradient(90deg, #2a6edc, #4facfe);
+    color: white;
+    text-align: center;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 15px;
+    position: relative;
+  }
+  
+  .ticket-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+ 
+  
+  .ticket-logo {
+    width: 90px;
+    margin: 15px auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ticket-details p {
+    margin: 8px 0;
+    font-size: 15px;
+    color: #444;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 4px;
+  }
+  
+  .ticket-details strong {
+    color: #2a6edc;
+  }
+  
+  .booking-id {
+    font-weight: bold;
+    color: #e67e22;
+    font-size: 15px;
+  }
+  
+  .ticket-footer {
+    margin-top: 20px;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .ticket-footer .btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+  }
+  
+  .ticket-footer .download {
+    background: #27ae60;
+    color: white;
+  }
+  .ticket-footer .download:hover {
+    background: #1f8e4d;
+  }
+  
+  .ticket-footer .print {
+    background: #2980b9;
+    color: white;
+  }
+  .ticket-footer .print:hover {
+    background: #216795;
+  }
+  
+  .ticket-footer .new {
+    background: #e74c3c;
+    color: white;
+  }
+  .ticket-footer .new:hover {
+    background: #c0392b;
+  }
+/* ✅ Mobile fix */
+@media (max-width: 600px) {
+    .ticket-container {
+      padding: 10px;   /* reduce side padding */
+    }
+  
+    .ticket-card {
+      padding: 15px;
+      max-width: 100%; /* fill screen */
+    }
+  
+    .ticket-details p {
+      font-size: 14px;
+    }
+  
+    .ticket-header h2 {
+      font-size: 18px;
+    }
+  
+    .ticket-footer .btn {
+      flex: 1 1 100%; /* buttons stack */
+      text-align: center;
+    }
+  }

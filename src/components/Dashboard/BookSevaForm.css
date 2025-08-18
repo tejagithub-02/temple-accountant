@@ -1,0 +1,94 @@
+.book-seva {
+    max-width: 450px;
+    margin: 100px auto;
+    padding: 25px 20px;
+    background: #fffdf7;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #444;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+  
+  .close-btn:hover {
+    color: red;
+  }
+  
+  
+  .form-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 18px;
+    text-align: center;
+    color: #1a237e;
+  }
+  
+  .success-msg {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  
+  .seva-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .seva-form label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+  }
+  
+  .seva-form input,
+  .seva-form select {
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  
+  .seva-form input:focus,
+  .seva-form select:focus {
+    border-color: #1a73e8;
+  }
+  
+  .submit-btn {
+    background: #1a237e;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .submit-btn:hover {
+    background: #0d47a1;
+  }
+  
