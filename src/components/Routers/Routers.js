@@ -1,36 +1,43 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import DashboardLayout from "../Layout/DashboardLayout";
 import Dashboard from "../Dashboard/Dashboard";
-
 import ChangePassword from "../Login/ChangePassword"; 
 import BookSevaForm from "../Dashboard/BookSevaForm";
 import Ticket from "../Dashboard/Ticket";
 import SevaBookings from "../Dashboard/SevaBookings";
+import Login from "../Login/Login"; // 👈 add Login page
+import SignUp from "../Login/SignUp";
 
-const Routers = () => {
+// Protect routes
+const PrivateRoute = ({ isAuthenticated }) => {
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+const Routers = ({ isAuthenticated, setIsAuthenticated }) => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<DashboardLayout />}>
-          {/* Default redirect */}
-          <Route index element={<Navigate to="/dashboard" replace />} />
+        {/* Public - Login */}
+        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
 
-          {/* Dashboard */}
-          <Route path="dashboard" element={<Dashboard />} />
+        {/* Private - Dashboard + others */}
+        <Route path="/" element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+          <Route element={<DashboardLayout />}>
+            {/* Default redirect */}
+            <Route index element={<Navigate to="/dashboard" replace />} />
 
-          {/* Change Password */}
-          <Route path="changepassword" element={<ChangePassword />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="changepassword" element={<ChangePassword />} />
+            <Route path="booksevaform" element={<BookSevaForm />} />
+            <Route path="ticket" element={<Ticket />} />
+            <Route path="sevabookings" element={<SevaBookings />} />
 
-          {/* ✅ Corrected BookSevaForm path */}
-          <Route path="booksevaform" element={<BookSevaForm />} />
-          <Route path="ticket" element={<Ticket />} />
-          <Route path="sevabookings" element={<SevaBookings />} />
-          
-
-          {/* Catch-all redirect */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Route>
         </Route>
       </Routes>
     </Router>
