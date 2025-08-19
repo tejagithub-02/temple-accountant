@@ -1,266 +1,264 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom"; // for navigation
+import React, { useState } from "react";
 import "./SevaBookings.css";
 
-const SevaBookings = () => {
-  const navigate = useNavigate();
-
+export default function SevaBookings() {
   const [filters, setFilters] = useState({
-    fromDate: "",
-    toDate: "",
-    sevaName: "",
-    paymentMethod: "All Methods",
+    seva: "",
+    fromDate: "",   
+    toDate: "",     
+    status: "All",
+    payment: "All",
   });
-
-  const bookingsData = [
+  const [bookings] = useState([
     {
       id: 1,
-      bookingId: "B001",
-      kartaName: "Ramesh",
+      name: "Ravi",
+      email: "t@example.com",
       mobile: "9876543210",
-      email: "ramesh@example.com",
-      seva: "Lakshmi Pooja",
-      paymentMethod: "Cash",
-      gotra: "Kashyap",
-      nakshatra: "Ashwini",
-      rashi: "Mesha",
+      seva: "Abhishekam",
+      sevadate: "2025-08-20",
+      gotra: "Kashyapa",
+      nakshatra: "Rohini",
+      raashi: "Vrishabha",
       district: "Hyderabad",
       state: "Telangana",
-      address: "Madhapur",
-      pincode: "500081",
-      date: "2025-08-10",
-      amount: 1500,
+      address: "Ameerpet, Hyderabad",
+      pincode: "500016",
+      
+      amount: 1000,
+      payment: "Online",
+    
+     
     },
     {
       id: 2,
-      bookingId: "B002",
-      kartaName: "Suresh",
-      mobile: "9123456789",
-      email: "suresh@example.com",
-      seva: "Satyanarayana Vratham",
-      paymentMethod: "Online",
-      gotra: "Bharadwaj",
-      nakshatra: "Rohini",
-      rashi: "Vrishabha",
+      name: "Priya",
+      email: "priya@example.com",
+      mobile: "9876501234",
+      seva: "Archana",
+      sevadate: "2025-08-21",
+      gotra: "Vasishta",
+      nakshatra: "Ashwini",
+      raashi: "Mesha",
       district: "Chennai",
       state: "Tamil Nadu",
-      address: "T Nagar",
-      pincode: "600017",
-      date: "2025-08-15",
-      amount: 2500,
+      address: "Adyar, Chennai",
+      pincode: "600020",
+     
+      amount: 310,
+      payment: "Cash",
+      
+    
     },
-    {
-      id: 3,
-      bookingId: "B003",
-      kartaName: "Teja",
-      mobile: "9618591044",
-      email: "teja@example.com",
-      seva: "Ganapathi Homam",
-      paymentMethod: "Cash",
-      gotra: "Vasishta",
-      nakshatra: "Revati",
-      rashi: "Meena",
-      district: "Bangalore",
-      state: "Karnataka",
-      address: "Whitefield",
-      pincode: "560066",
-      date: "2025-08-18",
-      amount: 1800,
-    },
-  ];
+  ]);
 
-  // Filtering
-  const filteredData = useMemo(() => {
-    return bookingsData.filter((b) => {
-      const fromCheck = filters.fromDate ? new Date(b.date) >= new Date(filters.fromDate) : true;
-      const toCheck = filters.toDate ? new Date(b.date) <= new Date(filters.toDate) : true;
-      const sevaCheck = filters.sevaName
-        ? b.seva.toLowerCase().includes(filters.sevaName.toLowerCase())
-        : true;
-      const paymentCheck =
-        filters.paymentMethod === "All Methods" || b.paymentMethod === filters.paymentMethod;
-
-      return fromCheck && toCheck && sevaCheck && paymentCheck;
-    });
-  }, [filters, bookingsData]);
-
-  // Total Amount
-  const totalAmount = filteredData.reduce((sum, b) => sum + b.amount, 0);
-
-  // Handle changes
-  const handleChange = (e) => {
+  const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleReset = () => {
+  const resetFilters = () => {
     setFilters({
-      fromDate: "",
-      toDate: "",
-      sevaName: "",
-      paymentMethod: "All Methods",
+      seva: "",
+      date: "",
+      status: "All",
+      payment: "All",
     });
   };
+  const filteredBookings = bookings.filter((b) => {
+    const afterFrom = !filters.fromDate || b.sevadate >= filters.fromDate;
+    const beforeTo = !filters.toDate || b.sevadate <= filters.toDate;
+  
+    return (
+      (!filters.seva || b.seva.toLowerCase().includes(filters.seva.toLowerCase())) &&
+      afterFrom &&
+      beforeTo &&
+      (filters.status === "All" || b.status === filters.status) &&
+      (filters.payment === "All" || b.payment === filters.payment)
+    );
+  });
+  
 
-  // CSV Download
-  const handleDownloadCSV = () => {
-    if (filteredData.length === 0) {
-      alert("No data to download!");
-      return;
-    }
+  const totalAmount = filteredBookings.reduce((sum, b) => sum + b.amount, 0);
 
+  
+
+  const downloadCSV = () => {
     const headers = [
-      "S.No",
-      "Booking ID",
-      "Karta Name",
-      "Mobile",
+      "ID",
+      "Name",
       "Email",
+      "Mobile",
       "Seva",
-      "Payment Method",
+      "Seva Date",
       "Gotra",
       "Nakshatra",
-      "Rashi",
+      "Raashi",
       "District",
       "State",
       "Address",
       "Pincode",
-      "Date",
+     
       "Amount",
+      "Payment",
+    
+     
     ];
-
-    const rows = filteredData.map((b, index) => [
-      index + 1,
-      b.bookingId,
-      b.kartaName,
-      b.mobile,
+  
+    const rows = filteredBookings.map((b) => [
+      b.id,
+      b.name,
       b.email,
+      b.mobile,
       b.seva,
-      b.paymentMethod,
+      b.sevadate,
       b.gotra,
       b.nakshatra,
-      b.rashi,
+      b.raashi,
       b.district,
       b.state,
       b.address,
       b.pincode,
-      b.date,
+   
       b.amount,
+      b.payment,
+    
+     
     ]);
-
-    const csvContent =
+  
+    let csvContent =
       "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-
+      [headers, ...rows].map((e) => e.join(",")).join("\n");
+  
+    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.href = encodeURI(csvContent);
-    link.download = "Seva_Bookings.csv";
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "seva_bookings.csv");
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
-
-  // Back to Dashboard
-  const handleBack = () => {
-    navigate("/dashboard"); // change path if needed
-  };
+  
 
   return (
-    <div className="seva-bookings-container">
-      <h2 className="title">View Seva Bookings</h2>
+    <div className="seva-bookings">
+      <h2 className="page-heading">View Seva Bookings</h2>
 
       {/* Filters */}
       <div className="filters">
-        <input type="date" name="fromDate" value={filters.fromDate} onChange={handleChange} />
-        <input type="date" name="toDate" value={filters.toDate} onChange={handleChange} />
-        <input
-          type="text"
-          name="sevaName"
-          placeholder="Enter seva name"
-          value={filters.sevaName}
-          onChange={handleChange}
-        />
-        <select name="paymentMethod" value={filters.paymentMethod} onChange={handleChange}>
-          <option>All Methods</option>
-          <option>Cash</option>
-          <option>Online</option>
-        </select>
-        <button className="apply-btn">Apply Filters</button>
-        <button className="reset-btn" onClick={handleReset}>
-          Reset
+        <div className="form-group">
+          <label>Seva</label>
+          <input
+            type="text"
+            name="seva"
+            value={filters.seva}
+            onChange={handleFilterChange}
+            placeholder="Enter seva name"
+          />
+        </div>
+        <div className="form-group">
+  <label>From Date</label>
+  <input
+    type="date"
+    name="fromDate"
+    value={filters.fromDate}
+    onChange={handleFilterChange}
+  />
+</div>
+<div className="form-group">
+  <label>To Date</label>
+  <input
+    type="date"
+    name="toDate"
+    value={filters.toDate}
+    onChange={handleFilterChange}
+  />
+</div>
+
+      
+        <div className="form-group">
+          <label>Payment</label>
+          <select
+            name="payment"
+            value={filters.payment}
+            onChange={handleFilterChange}
+          >
+            <option value="All">All</option>
+            <option value="Online">Online</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        <div className="form-group filter-actions">
+         
+          <button className="btn btn-secondary" onClick={resetFilters}>
+            Reset
+          </button>
+          <button className="btn btn-primary">Search</button>
+        </div>
+      </div>
+
+      {/* Approve All, Total Amount & CSV Download */}
+      <div className="approve-total">
+      
+        <button className="btn btn-info" onClick={downloadCSV}>
+          Download CSV
         </button>
+        <span className="total-amount">
+          Total Amount: ₹{totalAmount.toFixed(2)}
+        </span>
       </div>
 
-      {/* Total Amount */}
-      <div className="total-amount">
-        <strong>Total Amount: </strong>
-        <span>₹{totalAmount.toLocaleString()}</span>
-      </div>
-
-      {/* Table */}
+      {/* Scrollable Table */}
       <div className="table-container">
-        <table>
+        <table className="custom-table">
           <thead>
             <tr>
-              <th>S.No</th>
-              <th>Booking ID</th>
-              <th>Karta Name</th>
-              <th>Mobile</th>
-              <th>Email</th>
-              <th>Seva</th>
-              <th>Payment Method</th>
-              <th>Gotra</th>
-              <th>Nakshatra</th>
-              <th>Rashi</th>
-              <th>District</th>
-              <th>State</th>
-              <th>Address</th>
-              <th>Pincode</th>
-              <th>Date</th>
-              <th>Amount</th>
+              <th>ID</th>
+              <th>NAME</th>
+              <th>EMAIL</th>
+              <th>MOBILE</th>
+              <th>SEVA</th>
+              <th>DATE</th>
+              <th>GOTRA</th>
+              <th>NAKSHATRA</th>
+              <th>RAASHI</th>
+              <th>DISTRICT</th>
+              <th>STATE</th>
+              <th>ADDRESS</th>
+              <th>PINCODE</th>
+             
+              <th>AMOUNT</th>
+              <th>PAYMENT</th>
+             
+             
             </tr>
           </thead>
           <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((b, index) => (
-                <tr key={b.id}>
-                  <td>{index + 1}</td>
-                  <td>{b.bookingId}</td>
-                  <td>{b.kartaName}</td>
-                  <td>{b.mobile}</td>
-                  <td>{b.email}</td>
-                  <td>{b.seva}</td>
-                  <td>{b.paymentMethod}</td>
-                  <td>{b.gotra}</td>
-                  <td>{b.nakshatra}</td>
-                  <td>{b.rashi}</td>
-                  <td>{b.district}</td>
-                  <td>{b.state}</td>
-                  <td>{b.address}</td>
-                  <td>{b.pincode}</td>
-                  <td>{b.date}</td>
-                  <td>₹{b.amount}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="16" style={{ textAlign: "center", color: "gray" }}>
-                  No bookings found
-                </td>
+            {filteredBookings.map((b) => (
+              <tr key={b.id}>
+                <td>{b.id}</td>
+                <td>{b.name}</td>
+                <td className="email-cell">{b.email}</td>
+                <td>{b.mobile}</td>
+                <td>{b.seva}</td>
+                <td>{b.sevadate}</td>
+                <td>{b.gotra}</td>
+                <td>{b.nakshatra}</td>
+                <td>{b.raashi}</td>
+                <td>{b.district}</td>
+                <td>{b.state}</td>
+                <td>{b.address}</td>
+                <td>{b.pincode}</td>
+               
+                <td>₹{b.amount.toFixed(2)}</td>
+                <td>{b.payment}</td>
+               
+              
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
-
-      {/* Actions */}
-      <div className="actions">
-        <button className="download-btn" onClick={handleDownloadCSV}>
-          Download CSV
-        </button>
-        <button className="back-btn" onClick={handleBack}>
-          Back to Dashboard
-        </button>
-      </div>
     </div>
   );
-};
-
-export default SevaBookings;
+}
