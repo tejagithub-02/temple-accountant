@@ -1,41 +1,75 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./Ticket.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
+const API_BASE = process.env.REACT_APP_BACKEND_API; // must end with /
+const token = localStorage.getItem("userToken");
 
-const Ticket = ({ bookingData = {}, onClose = () => {} }) => {
+const axiosAuth = axios.create({
+  baseURL: `${API_BASE}api/savabooking`, 
+  headers: {
+    Authorization: token ? `Bearer ${token}` : "",
+    "Content-Type": "application/json",
+  },
+});
+
+const Ticket = ({ onClose = () => {} }) => {
   const ticketRef = useRef();
   const navigate = useNavigate();
+  const { id: bookingId } = useParams(); // ✅ Get bookingId from route params
+  const [bookingData, setBookingData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // ✅ Fetch booking by ID
+  useEffect(() => {
+    if (!bookingId) return;
 
-  // Dummy fallback data
-  const defaultData = {
-    name: "Thamba Maruthi Teja",
-    mobile: "9618591044",
-    email: "tmaruthiteja2013@gmail.com",
-    sevaName: "Lakshmi Pooja",
-    paymentMethod: "Online",
-    gotra: "Kashyap",
-    nakshatra: "Rohini",
-    raashi: "Vrishabha",
-    district: "Chittoor",
-    state: "Andhra Pradesh",
-    address: "123 Temple Road",
-    pincode: "517001",
-    date: "2025-08-20",
-    amount: "1500",
-  };
+    const fetchBooking = async () => {
+      try {
+        const res = await axiosAuth.get(`/getById/${bookingId}`);
+        if (res.data?.data) {
+          setBookingData(res.data.data);
+        } else {
+          setBookingData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching booking:", error);
+        setBookingData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const data = { ...defaultData, ...bookingData };
+    fetchBooking();
+  }, [bookingId]);
+
+  if (loading) {
+    return (
+      <div className="ticket-container">
+        <p>Loading booking details...</p>
+      </div>
+    );
+  }
+
+  if (!bookingData) {
+    return (
+      <div className="ticket-container">
+        <p>No booking found for ID: {bookingId}</p>
+        <button className="btn new" onClick={() => navigate("/dashboard")}>
+          ➕ New Booking
+        </button>
+      </div>
+    );
+  }
 
   const {
-    name,
-    mobile,
-    email,
-    sevaName,
-    paymentMethod,
+    karta_name: name,
+    phone: mobile,
+   
+    booking_type: paymentMethod,
     gotra,
     nakshatra,
     raashi,
@@ -43,13 +77,16 @@ const Ticket = ({ bookingData = {}, onClose = () => {} }) => {
     state,
     address,
     pincode,
-    date,
-    amount,
-  } = data;
+   
+    sava_id,
+  } = bookingData;
 
-  const bookingId =
-    "SEVA-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-
+    const sevaName = sava_id?.name || "N/A";
+    const amount = sava_id?.price || 0;
+    const date = sava_id?.date ? new Date(sava_id.date).toLocaleDateString() : "N/A";
+ 
+ 
+    // ✅ Download as PDF
   const handleDownloadPDF = async () => {
     const element = ticketRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
@@ -68,7 +105,6 @@ const Ticket = ({ bookingData = {}, onClose = () => {} }) => {
       <div className="ticket-card" ref={ticketRef}>
         <div className="ticket-header">
           <h2>🎉 Seva Booking Confirmation 🎉</h2>
-          
         </div>
 
         <div className="ticket-body">
@@ -76,10 +112,9 @@ const Ticket = ({ bookingData = {}, onClose = () => {} }) => {
 
           <div className="ticket-details">
             <p><strong>Temple:</strong> Sri JayaRama Seva Mandali</p>
-            <p><strong>Booking ID:</strong> <span className="booking-id">{bookingId}</span></p>
+            <p><strong>Booking ID:</strong> {bookingId}</p>
             <p><strong>Karta Name:</strong> {name}</p>
-            <p><strong>Mobile:</strong> {mobile}</p>
-            <p><strong>Email:</strong> {email}</p>
+            <p><strong>Mobile:</strong> {mobile}</p>      
             <p><strong>Seva:</strong> {sevaName}</p>
             <p><strong>Payment Method:</strong> {paymentMethod}</p>
             <p><strong>Gotra:</strong> {gotra}</p>
@@ -96,51 +131,39 @@ const Ticket = ({ bookingData = {}, onClose = () => {} }) => {
       </div>
 
       <div className="ticket-footer">
-        <button className="btn download" onClick={handleDownloadPDF}>⬇ Download PDF</button>
+        <button className="btn download" onClick={handleDownloadPDF}>
+          ⬇ Download PDF
+        </button>
+
         <button
-  className="btn print"
-  onClick={() => {
-    const printContent = ticketRef.current;
-    const printWindow = window.open("", "", "width=800,height=900");
+          className="btn print"
+          onClick={() => {
+            const printContent = ticketRef.current;
+            const printWindow = window.open("", "", "width=800,height=900");
 
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Print Ticket</title>
-          <style>
-            ${document.querySelector("style")?.innerHTML || ""}
-            ${Array.from(document.styleSheets)
-              .map((sheet) => {
-                try {
-                  return Array.from(sheet.cssRules)
-                    .map((rule) => rule.cssText)
-                    .join("");
-                } catch (e) {
-                  return "";
-                }
-              })
-              .join("")}
-          </style>
-        </head>
-        <body>
-          ${printContent.outerHTML}
-        </body>
-      </html>
-    `);
+            printWindow.document.write(`
+              <html>
+                <head>
+                  <title>Print Ticket</title>
+                </head>
+                <body>
+                  ${printContent.outerHTML}
+                </body>
+              </html>
+            `);
 
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  }}
->
-  🖨 Print
-</button>
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+          }}
+        >
+          🖨 Print
+        </button>
 
-<button className="btn new" onClick={() => navigate("/dashboard")}>
-  ➕ New Booking
-</button>
-
+        <button className="btn new" onClick={() => navigate("/dashboard")}>
+          ➕ New Booking
+        </button>
       </div>
     </div>
   );

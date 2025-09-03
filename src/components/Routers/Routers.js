@@ -18,29 +18,30 @@ const PrivateRoute = ({ isAuthenticated }) => {
 const Routers = ({ isAuthenticated, setIsAuthenticated }) => {
   return (
     <Router>
-      <Routes>
-        {/* Public - Login */}
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
+    <Routes>
+      {/* Public - Login */}
+      <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+      <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
+  
+      {/* Default root path → login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+  
+      {/* Private - Dashboard + others */}
+      <Route path="/" element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="changepassword" element={<ChangePassword />} />
+          <Route path="booksevaform" element={<BookSevaForm />} />
+          <Route path="/ticket/:id" element={<Ticket />} />
 
-        {/* Private - Dashboard + others */}
-        <Route path="/" element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
-          <Route element={<DashboardLayout />}>
-            {/* Default redirect */}
-            <Route index element={<Navigate to="/dashboard" replace />} />
-
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="changepassword" element={<ChangePassword />} />
-            <Route path="booksevaform" element={<BookSevaForm />} />
-            <Route path="ticket" element={<Ticket />} />
-            <Route path="sevabookings" element={<SevaBookings />} />
-
-            {/* Catch-all */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Route>
+          <Route path="sevabookings" element={<SevaBookings />} />
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
-      </Routes>
-    </Router>
+      </Route>
+    </Routes>
+  </Router>
+  
   );
 };
 

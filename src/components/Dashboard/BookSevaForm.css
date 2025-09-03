@@ -1,5 +1,5 @@
 .book-seva {
-    max-width: 450px;
+    max-width: 700px;
     margin: 100px auto;
     padding: 25px 20px;
     background: #fffdf7;
@@ -91,4 +91,10 @@
   .submit-btn:hover {
     background: #0d47a1;
   }
-  
+  @media (min-width: 1024px)
+  {
+    .book-seva {
+      max-width: 700px;
+     margin-left: 400px;
+    }
+  }
