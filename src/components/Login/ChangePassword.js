@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 import "./ChangePassword.css";
 
 const API_BASE = process.env.REACT_APP_BACKEND_API; // must end with /
@@ -13,16 +14,21 @@ export default function ChangePassword() {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-
+  
     if (newPassword !== confirmNewPassword) {
-      alert("New passwords do not match!");
+      Swal.fire({
+        icon: "error",
+        title: "Password Mismatch",
+        text: "New passwords do not match!",
+        confirmButtonColor: "#ef4444",
+      });
       return;
     }
-
+  
     try {
       const token = localStorage.getItem("userToken");
       const userId = localStorage.getItem("userId");
-
+  
       const res = await axios.patch(
         `${API_BASE}api/admin/editAdminPassword/${userId}`,
         {
@@ -36,19 +42,33 @@ export default function ChangePassword() {
           },
         }
       );
-
+  
       if (res.data.status) {
-        alert(res.data.message); // "Password updated successfully"
-        navigate("/dashboard");
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: res.data.message || "Password updated successfully",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+  
+        setTimeout(() => navigate("/dashboard"), 2000); // redirect after popup
       } else {
-        alert(res.data.message || "Password update failed.");
+        Swal.fire({
+          icon: "error",
+          title: "Update Failed",
+          text: res.data.message || "Password update failed.",
+          confirmButtonColor: "#ef4444",
+        });
       }
     } catch (error) {
       console.error("Change password error:", error);
-      alert(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again later."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message || "Something went wrong. Please try again later.",
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 

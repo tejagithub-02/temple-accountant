@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./SevaBookings.css";
 
+
 const API_BASE = process.env.REACT_APP_BACKEND_API; // must end with /
 const token = localStorage.getItem("userToken");
 
@@ -33,7 +34,6 @@ export default function SevaBookings() {
           const mapped = res.data.data.map((b, idx) => ({
             id: idx + 1,
             name: b.karta_name,
-           
             mobile: b.phone,
             seva: b.sava_id?.name || "N/A",
             sevadate: b.sava_id?.date
@@ -47,10 +47,15 @@ export default function SevaBookings() {
             address: b.address,
             pincode: b.pincode,
             amount: b.sava_id?.price || 0,
-            payment: b.booking_type,
+            payment: b.booking_type,   // 👈 payment type (UPI/offline/online)
             status: b.status,
           }));
-          setBookings(mapped);
+  
+          const upiAndOffline = mapped.filter(
+            (b) => b.payment?.toLowerCase() === "upi" || b.payment?.toLowerCase() === "offline"
+          );
+          
+          setBookings(upiAndOffline);
         }
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -58,9 +63,10 @@ export default function SevaBookings() {
         setLoading(false);
       }
     };
-
+  
     fetchBookings();
   }, []);
+  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -147,7 +153,7 @@ export default function SevaBookings() {
 
   return (
     <div className="seva-bookings">
-      <h2 className="page-heading">View Seva Bookings</h2>
+      <h2 className="page-heading">Temple Bookings</h2>
 
       {/* Filters */}
       <div className="filters">

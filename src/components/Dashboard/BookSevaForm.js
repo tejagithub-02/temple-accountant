@@ -20,7 +20,7 @@ const BookSevaForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
-    email: "",
+   
     date: "",
     sevaType: "",
     sevaName: "",
@@ -103,7 +103,7 @@ const BookSevaForm = () => {
     const payload = {
       karta_name: formData.name,
       phone: formData.mobile,
-      email: formData.email,
+     
       date: formData.date,
       sava_id: selectedSeva?._id,
       booking_type: formData.booking_type,
@@ -136,7 +136,7 @@ const BookSevaForm = () => {
       setFormData({
         name: "",
         mobile: "",
-        email: "",
+      
         date: "",
         sevaType: "",
         sevaName: "",
@@ -231,16 +231,7 @@ const BookSevaForm = () => {
           required
         />
 
-        {/* Email */}
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          placeholder="Enter your email"
-          onChange={handleChange}
-          required
-        />
+       
 
         {/* Date */}
         <label>Date</label>

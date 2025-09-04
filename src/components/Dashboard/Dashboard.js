@@ -23,7 +23,13 @@ const DashboardStats = () => {
       try {
         const res = await axiosAuth.get("/getAll");
         if (res.data?.data) {
-          setTotalBookings(res.data.data.length); // ✅ count bookings
+          const upiOrOfflineBookings = res.data.data.filter(
+            (b) =>
+              b.booking_type?.toLowerCase() === "upi" ||
+              b.booking_type?.toLowerCase() === "offline"
+          );
+    
+          setTotalBookings(upiOrOfflineBookings.length); // ✅ only UPI + Offline count
         }
       } catch (error) {
         console.error("Error fetching total bookings:", error);
@@ -31,7 +37,7 @@ const DashboardStats = () => {
         setLoading(false);
       }
     };
-
+    
     fetchTotalBookings();
   }, []);
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import axios from "axios";
+import Swal from "sweetalert2"; // ✅ import SweetAlert2
 import "./Auth.css";
 
 const API_BASE = process.env.REACT_APP_BACKEND_API; // must end with /
@@ -18,42 +19,61 @@ export default function Signup() {
     e.preventDefault();
 
     if (!email || !name || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill in all fields.",
+        confirmButtonColor: "#6366f1",
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      Swal.fire({
+        icon: "error",
+        title: "Password Mismatch",
+        text: "Passwords do not match.",
+        confirmButtonColor: "#ef4444",
+      });
       return;
     }
 
     try {
-      // API call using API_BASE
       const res = await axios.post(`${API_BASE}api/admin/adminRegistration`, {
         name,
         email,
         password,
-      
       });
 
       if (res.data.Status) {
-        alert(res.data.message);
+        Swal.fire({
+          icon: "success",
+          title: "Signup Successful",
+          text: res.data.message,
+          timer: 2000,
+          showConfirmButton: false,
+        });
 
-        // Save token / user details to localStorage
         localStorage.setItem("userToken", res.data.data.tokens[0].token);
-
         localStorage.setItem("userEmail", res.data.data.email);
 
-        navigate("/login");
+        setTimeout(() => navigate("/login"), 2000); // redirect after popup
       } else {
-        alert("Signup failed. Please try again.");
+        Swal.fire({
+          icon: "error",
+          title: "Signup Failed",
+          text: "Please try again.",
+          confirmButtonColor: "#ef4444",
+        });
       }
     } catch (error) {
       console.error("Signup error:", error);
-      alert(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again later."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.response?.data?.message || "Something went wrong. Please try again later.",
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 
@@ -109,9 +129,6 @@ export default function Signup() {
             required
           />
         </div>
-
-        
-        
 
         {/* Submit */}
         <button type="submit" className="auth-btn">
