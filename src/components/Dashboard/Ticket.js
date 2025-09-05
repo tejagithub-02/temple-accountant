@@ -108,11 +108,34 @@ const Ticket = ({ onClose = () => {} }) => {
 
     const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
+    const pdfHeight = pdf.internal.pageSize.getHeight(); // full A4 height
+    
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    
     pdf.save(`${bookingId}.pdf`);
   };
+
+  // ✅ Handle Print (same layout as A4 PDF)
+const handlePrint = async () => {
+  const element = ticketRef.current;
+  const canvas = await html2canvas(element, { scale: 2 });
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+
+  pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+  // Instead of saving, open print dialog
+  const pdfBlob = pdf.output("bloburl");
+  const printWindow = window.open(pdfBlob, "_blank");
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+};
+
 
   return (
     <div className="ticket-container">
@@ -130,6 +153,10 @@ const Ticket = ({ onClose = () => {} }) => {
             <p><strong>Karta Name:</strong> {name}</p>
             <p><strong>Mobile:</strong> {mobile}</p>
             <p><strong>Seva:</strong> {sevaName}</p>
+            <p>
+              <strong>{category === "General Sevas" ? "Booking Dates" : "Date"}:</strong>{" "}
+              {dateDisplay}
+            </p>
             <p><strong>Payment Method:</strong> {paymentMethod}</p>
             <p><strong>Gotra:</strong> {gotra}</p>
             <p><strong>Nakshatra:</strong> {nakshatra}</p>
@@ -138,10 +165,7 @@ const Ticket = ({ onClose = () => {} }) => {
             <p><strong>State:</strong> {state}</p>
             <p><strong>Address:</strong> {address}</p>
             <p><strong>Pincode:</strong> {pincode}</p>
-            <p>
-              <strong>{category === "General Sevas" ? "Booking Dates" : "Date"}:</strong>{" "}
-              {dateDisplay}
-            </p>
+          
             <p><strong>Amount:</strong> ₹{amount}</p>
           </div>
         </div>
@@ -152,31 +176,10 @@ const Ticket = ({ onClose = () => {} }) => {
           ⬇ Download PDF
         </button>
 
-        <button
-          className="btn print"
-          onClick={() => {
-            const printContent = ticketRef.current;
-            const printWindow = window.open("", "", "width=800,height=900");
+        <button className="btn print" onClick={handlePrint}>
+  🖨 Print
+</button>
 
-            printWindow.document.write(`
-              <html>
-                <head>
-                  <title>Print Ticket</title>
-                </head>
-                <body>
-                  ${printContent.outerHTML}
-                </body>
-              </html>
-            `);
-
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-          }}
-        >
-          🖨 Print
-        </button>
 
         <button className="btn new" onClick={() => navigate("/dashboard")}>
           ➕ New Booking
