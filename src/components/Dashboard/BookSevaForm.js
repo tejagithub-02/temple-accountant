@@ -41,6 +41,17 @@ const BookSevaForm = () => {
   const [sevas, setSevas] = useState([]);
   const [filteredSevas, setFilteredSevas] = useState([]);
   const [selectedSeva, setSelectedSeva] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+// ✅ Toast state
+const [toast, setToast] = useState({ message: "", type: "" });
+
+// Auto-clear toast after 3s
+useEffect(() => {
+  if (toast.message) {
+    const timer = setTimeout(() => setToast({ message: "", type: "" }), 3000);
+    return () => clearTimeout(timer);
+  }
+}, [toast]);
 
   // ✅ Fetch Sevas
   useEffect(() => {
@@ -105,10 +116,18 @@ const BookSevaForm = () => {
   };
   
 
-  // ✅ Submit
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    // ✅ Check payment method before API call
+  if (!formData.booking_type) {
+    setErrorMessage("⚠️ Please select a payment method before submitting.");
+    return;
+  }
 
+  setErrorMessage(""); 
+  
     const payload = {
       karta_name: formData.name,
       phone: formData.mobile,
@@ -123,32 +142,27 @@ const BookSevaForm = () => {
       pincode: formData.pincode,
       amount: formData.amount,
       status: formData.status,
-      // use correct dates
       date: selectedSeva?.category === "Event-Specific Sevas" ? formData.date : undefined,
       from_booking_date: selectedSeva?.category === "General Sevas" ? formData.from_booking_date : undefined,
       to_booking_date: selectedSeva?.category === "General Sevas" ? formData.to_booking_date : undefined,
     };
-    
-
-    console.log("➡️ Posting booking:", payload);
-    console.log("➡️ API URL:", `${API_BASE}api/savabooking/create`);
-
+  
     try {
       const res = await axiosAuth.post("/create", payload);
-      console.log("✅ Booking created:", res.data);
-      
-      const newBookingId = res.data?.data?._id; // ✅ backend returns created booking ID
-      if (newBookingId) {
-        navigate(`/ticket/${newBookingId}`); // ✅ go to Ticket page with ID
-      } else {
-        alert("Booking created but ID missing!");
-      }
-      
+  
+      const newBookingId = res.data?.data?._id;
+if (newBookingId) {
+  setToast({ message: "✅ Booking created successfully!", type: "success" });
+  setTimeout(() => navigate(`/ticket/${newBookingId}`), 1200);
+} else {
+  setToast({ message: "⚠️ Booking created, but ticket ID not found.", type: "warning" });
+}
+
+  
       setSubmitted(true);
       setFormData({
         name: "",
         mobile: "",
-      
         date: "",
         sevaType: "",
         sevaName: "",
@@ -166,14 +180,14 @@ const BookSevaForm = () => {
       setSelectedSeva(null);
     } catch (error) {
       if (error.response) {
-        console.error("❌ Backend error:", error.response.status, error.response.data);
-        alert(`Failed: ${error.response.data.message || "Booking error"}`);
+        setToast({ message: `❌ Booking failed: ${error.response.data.message || "Server error."}`, type: "error" });
       } else {
-        console.error("❌ Request error:", error.message);
-        alert("Failed to submit booking. Please try again.");
+        setToast({ message: "❌ Failed to submit booking. Please check your network and try again.", type: "error" });
       }
     }
   };
+  
+
 
   const handleClose = () => {
     navigate("/dashboard");
@@ -190,6 +204,12 @@ const BookSevaForm = () => {
       {submitted && (
         <p className="success-msg">✅ Booking submitted successfully!</p>
       )}
+{errorMessage && <p className="error-msg">{errorMessage}</p>}
+{toast.message && (
+  <div className={`toast ${toast.type}`}>
+    {toast.message}
+  </div>
+)}
 
       <form onSubmit={handleSubmit} className="seva-form">
         {/* Seva Type */}

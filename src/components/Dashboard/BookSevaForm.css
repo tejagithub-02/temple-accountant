@@ -98,3 +98,39 @@
      margin-left: 400px;
     }
   }
+  .error-msg {
+    color: #b3261e;       /* red but formal */
+    background: #fdecea;  /* soft red background */
+    border: 1px solid #f5c2c0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+    z-index: 9999;
+  }
+  
+  .toast.success { background: #28a745; }
+  .toast.error { background: #dc3545; }
+  .toast.warning { background: #ffc107; color: #333; }
+  
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes fadeOut {
+    to { opacity: 0; transform: translateX(100%); }
+  }
+  
