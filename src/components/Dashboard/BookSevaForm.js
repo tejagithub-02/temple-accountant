@@ -20,8 +20,6 @@ const BookSevaForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
-   
-    date: "",
     sevaType: "",
     sevaName: "",
     booking_type: "",
@@ -34,6 +32,9 @@ const BookSevaForm = () => {
     pincode: "",
     amount: "",
     status: "approved",
+    date: "", // keep for event-specific
+    from_booking_date: "", // for general
+    to_booking_date: "",   // for general
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -73,28 +74,36 @@ const BookSevaForm = () => {
   const handleSevaSelect = (e) => {
     const sevaId = e.target.value;
     const seva = filteredSevas.find((s) => s._id === sevaId);
-
+  
     setSelectedSeva(seva || null);
-
+  
     if (seva) {
-      setFormData((prev) => ({
-        ...prev,
-        sevaName: seva.name,
-        amount: seva.price || "",
-        date:
-          seva.category === "Event-Specific Sevas" && seva.date
-            ? seva.date.split("T")[0]
-            : "",
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        sevaName: "",
-        amount: "",
-        date: "",
-      }));
-    }
+      let fromDate = "";
+      let toDate = "";
+  
+      if (seva.category === "General Sevas") {
+        setFormData((prev) => ({
+          ...prev,
+          sevaName: seva.name,
+          amount: seva.price || "",
+          from_booking_date: "",
+          to_booking_date: "",
+          date: "", // clear event-specific date
+        }));
+      } else if (seva.category === "Event-Specific Sevas" && seva.date) {
+        setFormData((prev) => ({
+          ...prev,
+          sevaName: seva.name,
+          amount: seva.price || "",
+          date: seva.date.split("T")[0],
+          from_booking_date: "",
+          to_booking_date: "",
+        }));
+      }
+      
+    } 
   };
+  
 
   // ✅ Submit
   const handleSubmit = async (e) => {
@@ -103,8 +112,6 @@ const BookSevaForm = () => {
     const payload = {
       karta_name: formData.name,
       phone: formData.mobile,
-     
-      date: formData.date,
       sava_id: selectedSeva?._id,
       booking_type: formData.booking_type,
       gotra: formData.gotra,
@@ -116,7 +123,12 @@ const BookSevaForm = () => {
       pincode: formData.pincode,
       amount: formData.amount,
       status: formData.status,
+      // use correct dates
+      date: selectedSeva?.category === "Event-Specific Sevas" ? formData.date : undefined,
+      from_booking_date: selectedSeva?.category === "General Sevas" ? formData.from_booking_date : undefined,
+      to_booking_date: selectedSeva?.category === "General Sevas" ? formData.to_booking_date : undefined,
     };
+    
 
     console.log("➡️ Posting booking:", payload);
     console.log("➡️ API URL:", `${API_BASE}api/savabooking/create`);
@@ -233,21 +245,37 @@ const BookSevaForm = () => {
 
        
 
-        {/* Date */}
-        <label>Date</label>
-        {selectedSeva &&
-        selectedSeva.category === "Event-Specific Sevas" &&
-        selectedSeva.date ? (
-          <input type="text" value={formData.date} readOnly />
-        ) : (
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-        )}
+        {/* Date for Event-Specific */}
+{selectedSeva?.category === "Event-Specific Sevas" ? (
+  <>
+    <label>Date</label>
+    <input type="text" value={formData.date} readOnly />
+  </>
+) : null}
+
+{/* Dates for General Sevas */}
+{selectedSeva?.category === "General Sevas" ? (
+  <>
+    <label>From Date</label>
+    <input
+      type="date"
+      name="from_booking_date"
+      value={formData.from_booking_date}
+      onChange={handleChange}
+      required
+    />
+
+    <label>To Date (optional)</label>
+    <input
+      type="date"
+      name="to_booking_date"
+      value={formData.to_booking_date}
+      onChange={handleChange}
+    />
+  </>
+) : null}
+
+
 
        
         <label>Payment Method</label>

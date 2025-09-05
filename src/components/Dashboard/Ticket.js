@@ -9,7 +9,7 @@ const API_BASE = process.env.REACT_APP_BACKEND_API; // must end with /
 const token = localStorage.getItem("userToken");
 
 const axiosAuth = axios.create({
-  baseURL: `${API_BASE}api/savabooking`, 
+  baseURL: `${API_BASE}api/savabooking`,
   headers: {
     Authorization: token ? `Bearer ${token}` : "",
     "Content-Type": "application/json",
@@ -19,7 +19,7 @@ const axiosAuth = axios.create({
 const Ticket = ({ onClose = () => {} }) => {
   const ticketRef = useRef();
   const navigate = useNavigate();
-  const { id: bookingId } = useParams(); // ✅ Get bookingId from route params
+  const { id: bookingId } = useParams();
   const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,7 +68,6 @@ const Ticket = ({ onClose = () => {} }) => {
   const {
     karta_name: name,
     phone: mobile,
-   
     booking_type: paymentMethod,
     gotra,
     nakshatra,
@@ -77,16 +76,31 @@ const Ticket = ({ onClose = () => {} }) => {
     state,
     address,
     pincode,
-   
     sava_id,
+    from_booking_date,
+    to_booking_date,
   } = bookingData;
 
-    const sevaName = sava_id?.name || "N/A";
-    const amount = sava_id?.price || 0;
-    const date = sava_id?.date ? new Date(sava_id.date).toLocaleDateString() : "N/A";
- 
- 
-    // ✅ Download as PDF
+  const sevaName = sava_id?.name || "N/A";
+  const amount = sava_id?.price || 0;
+  const category = sava_id?.category || "";
+
+  // ✅ Handle dates differently
+  let dateDisplay = "N/A";
+  if (category === "Event-Specific Sevas" && sava_id?.date) {
+    dateDisplay = new Date(sava_id.date).toLocaleDateString();
+  } else if (category === "General Sevas") {
+    if (from_booking_date && to_booking_date) {
+      const fromDate = new Date(from_booking_date).toLocaleDateString();
+      const toDate = new Date(to_booking_date).toLocaleDateString();
+      dateDisplay = `${fromDate} → ${toDate}`;
+    } else if (from_booking_date) {
+      dateDisplay = new Date(from_booking_date).toLocaleDateString();
+    }
+  }
+  
+
+  // ✅ Download as PDF
   const handleDownloadPDF = async () => {
     const element = ticketRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
@@ -114,7 +128,7 @@ const Ticket = ({ onClose = () => {} }) => {
             <p><strong>Temple:</strong> Sri JayaRama Seva Mandali</p>
             <p><strong>Booking ID:</strong> {bookingId}</p>
             <p><strong>Karta Name:</strong> {name}</p>
-            <p><strong>Mobile:</strong> {mobile}</p>      
+            <p><strong>Mobile:</strong> {mobile}</p>
             <p><strong>Seva:</strong> {sevaName}</p>
             <p><strong>Payment Method:</strong> {paymentMethod}</p>
             <p><strong>Gotra:</strong> {gotra}</p>
@@ -124,7 +138,10 @@ const Ticket = ({ onClose = () => {} }) => {
             <p><strong>State:</strong> {state}</p>
             <p><strong>Address:</strong> {address}</p>
             <p><strong>Pincode:</strong> {pincode}</p>
-            <p><strong>Date:</strong> {date}</p>
+            <p>
+              <strong>{category === "General Sevas" ? "Booking Dates" : "Date"}:</strong>{" "}
+              {dateDisplay}
+            </p>
             <p><strong>Amount:</strong> ₹{amount}</p>
           </div>
         </div>

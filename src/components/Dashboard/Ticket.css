@@ -55,6 +55,8 @@
   }
   
   .ticket-details p {
+    display: flex;
+    justify-content: space-between; /* label on left, value on right */
     margin: 8px 0;
     font-size: 15px;
     color: #444;
@@ -65,6 +67,18 @@
   .ticket-details strong {
     color: #2a6edc;
   }
+  /* Highlight key info */
+.ticket-details p.booking-id,
+.ticket-details p.seva-name,
+.ticket-details p.amount,
+.ticket-details p.date {
+  font-weight: bold;
+  color: #e67e22;
+  background: #fff4e6;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+  
   
   .booking-id {
     font-weight: bold;
