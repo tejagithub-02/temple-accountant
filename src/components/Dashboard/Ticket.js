@@ -141,7 +141,7 @@ const handlePrint = async () => {
     <div className="ticket-container">
       <div className="ticket-card" ref={ticketRef}>
         <div className="ticket-header">
-          <h2>🎉 Seva Booking Confirmation 🎉</h2>
+          <h2> 💐 Seva Booking Confirmation 💐</h2>
         </div>
 
         <div className="ticket-body">
