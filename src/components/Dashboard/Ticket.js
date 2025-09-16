@@ -100,21 +100,32 @@ const Ticket = ({ onClose = () => {} }) => {
   }
   
 
-  // ✅ Download as PDF
   const handleDownloadPDF = async () => {
+    if (!bookingData) return;
+  
     const element = ticketRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
-
+  
     const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight(); // full A4 height
-    
+    const pdfHeight = pdf.internal.pageSize.getHeight();
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    
-    pdf.save(`${bookingId}.pdf`);
+  
+    // Format date as MM-DD-YYYY
+    let pdfDate = "N/A";
+    if (sava_id?.category === "Event-Specific Sevas" && sava_id?.date) {
+      const d = new Date(sava_id.date);
+      pdfDate = `${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}-${d.getFullYear()}`;
+    } else if (sava_id?.category === "General Sevas" && from_booking_date) {
+      const d = new Date(from_booking_date);
+      pdfDate = `${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}-${d.getFullYear()}`;
+    }
+  
+    const pdfName = `${sevaName} Poojs (${pdfDate}).pdf`;
+    pdf.save(pdfName);
   };
-
+  
   // ✅ Handle Print (same layout as A4 PDF)
 const handlePrint = async () => {
   const element = ticketRef.current;
