@@ -126,7 +126,7 @@ const Ticket = ({ onClose = () => {} }) => {
     pdf.save(pdfName);
   };
   
-  // ✅ Handle Print (same layout as A4 PDF)
+
 const handlePrint = async () => {
   const element = ticketRef.current;
   const canvas = await html2canvas(element, { scale: 2 });
